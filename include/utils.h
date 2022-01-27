@@ -34,6 +34,22 @@ typedef struct
 }  caen_hv_state;
 
 
+enum gtk_set_cmd{SET_VSET,SET_ISET,SET_RAMP_UP,SET_RAMP_DOWN,SET_TRIP};
+
+typedef void (*command)(caen_hv_state*, float);
+
+void test(caen_hv_state* s, float val);
+
+static command commands[10] =
+{
+   [SET_VSET]      = test,
+   [SET_ISET]      = test,
+   [SET_RAMP_UP]   = test,
+   [SET_RAMP_DOWN] = test,
+   [SET_TRIP]      = test,
+
+};
+
 void configure_caen_serial_comm(struct termios * ptr_tty, int vtime, int vmin, int serial_port);
 
 

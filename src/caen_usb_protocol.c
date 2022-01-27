@@ -324,7 +324,7 @@ void set_voltage_level(caen_hv_state *s, float v)
    // Writing to serial
 
    unsigned char cmd[50];
-   sprintf(cmd,"$CMD:SET,PAR:VSET,VAL:%3f\r\n",v);
+   sprintf(cmd,"$CMD:SET,PAR:VSET,VAL:.%3f\r\n",v);
    write(s->serial_port, cmd, sizeof(cmd));
    usleep(2000);
 
@@ -567,6 +567,14 @@ void board_clear_signal(caen_hv_state* s)
    read_from_serial(s->serial_port, response, 0);
 
    // Error Handling
+
+   return ;
+}
+
+
+void test(caen_hv_state* s, float val)
+{
+   printf("%.3f\n", val);
 
    return ;
 }
