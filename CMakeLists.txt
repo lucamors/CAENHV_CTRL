@@ -25,6 +25,7 @@ list(APPEND FC_DEP_LIBS ${GTK3_LIBRARIES})
 set(
   CAENHV_CTRL
   glade/gui.glade
+  docs/icon.png
 )
 
 foreach(_script ${CAENHV_CTRL})
@@ -40,19 +41,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 
-#----------------------------------------------------------------------------
-
-list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
-
-#----------------------------------------------------------------------------
-#--- Locate the ROOT package and defines a number of variables
-#--- (e.g. ROOT_INCLUDE_DIRS)
-find_package(ROOT REQUIRED COMPONENTS RIO Net)
-
-#----------------------------------------------------------------------------
-#--- Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
-include(${ROOT_USE_FILE})
-
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 #----------------------------------------------------------------------------
@@ -66,9 +54,17 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.h)
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(caenhvctrl caenhvctrl.c ${sources} ${headers})
-target_link_libraries(caenhvctrl ${ROOT_LIBRARIES} -rdynamic)
+target_link_libraries(caenhvctrl -rdynamic)
 target_link_libraries (caenhvctrl ${FC_DEP_LIBS})
 
+
+option(DEBUG "DEBUG" ON)
+if(DEBUG)
+  message("-- Building with console debug.")
+  add_definitions(-DDEBUG)
+else()
+  message("-- Building without console debug.")
+endif()
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
