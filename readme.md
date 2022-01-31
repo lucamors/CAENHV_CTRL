@@ -2,10 +2,10 @@
 
 # A simple controller for CAEN DT547x H.V. Power Supply
 
-This repo contains a simple program, written in c, for the control of the CAEN DT547x Desktop power supply family under gnu/linux operating systems.
+This repo contains a simple program, written in c, for the control of the CAEN DT547x Desktop power supply family under GNU/Linux operating systems.
 
-The communication with the module is accomplished via serial over usb using the protocol
-describe in the instrument's manual provided by the vendor.
+The communication with the module is accomplished via serial over USB using the protocol
+described in the instrument's manual provided by the vendor.
 
 ## Installation
 
