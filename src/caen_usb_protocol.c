@@ -7,6 +7,34 @@
 // MONITOR COMMANDS
 ////////////////////////////////////////////////////////////////////////////////
 
+
+////////////////////////////////////////////////////////////////////////////////
+
+void read_board_status(caen_hv_state* s)
+{
+   // Writing to serial
+   unsigned char cmd[] = "$CMD:MON,PAR:STAT\r\n";
+   write(s->serial_port, cmd, sizeof(cmd));
+
+   // Waiting for transmission time
+   usleep(2000);
+
+   unsigned char response[50];
+   read_from_serial(s->serial_port, response, 1);
+
+   uint16_t status = atoll(response);
+
+   for (int i = 0; i < 16; i++)
+   {
+      s->status[i] = (status & (1 << i) ) >> (i);
+   }
+
+   return ;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 void read_from_serial(int serial_port, unsigned char * response, int skip_level)
 {
    // Response bufferx
@@ -130,12 +158,16 @@ float read_voltage(caen_hv_state* s)
    write(s->serial_port, cmd, sizeof(cmd));
 
    // Waiting for transmission time
-   usleep(2000);
+   usleep(5000);
 
    unsigned char response[50];
    read_from_serial(s->serial_port, response,1);
 
-   return atof(response);
+   s->voltage_level =  atof(response);
+
+   #ifdef DEBUG
+      printf(">>>vl: %.2f\n",s->voltage_level);
+   #endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -152,7 +184,7 @@ float read_current(caen_hv_state* s)
    unsigned char response[50];
    read_from_serial(s->serial_port, response,1);
 
-   return atof(response);
+   s->current_level =  atof(response);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -289,31 +321,6 @@ void read_maximum_current(caen_hv_state* s)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-
-void read_board_status(caen_hv_state* s)
-{
-   // Writing to serial
-   unsigned char cmd[] = "$CMD:MON,PAR:STAT\r\n";
-   write(s->serial_port, cmd, sizeof(cmd));
-
-   // Waiting for transmission time
-   usleep(2000);
-
-   unsigned char response[50];
-   read_from_serial(s->serial_port, response,1);
-
-   uint16_t status = atoll(response);
-
-   const uint16_t interlock_flag = 0b1 << 11;
-
-   for (int i = 0; i < 16; i++)
-   {
-      s->status[i] = (status & (1 << i) ) >> (i);
-   }
-
-   return ;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // SET COMMANDS
@@ -322,9 +329,8 @@ void read_board_status(caen_hv_state* s)
 void set_voltage_level(caen_hv_state *s, float v)
 {
    // Writing to serial
-
    unsigned char cmd[50];
-   sprintf(cmd,"$CMD:SET,PAR:VSET,VAL:.%3f\r\n",v);
+   sprintf(cmd,"$CMD:SET,PAR:VSET,VAL:%.3f\r\n",v);
    write(s->serial_port, cmd, sizeof(cmd));
    usleep(2000);
 
@@ -340,12 +346,13 @@ void set_voltage_level(caen_hv_state *s, float v)
 
    s->vset = v;
 
+   read_board_status(s);
    return ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void set_current_maximum(caen_hv_state *s, float imax)
+void set_maximum_current(caen_hv_state *s, float imax)
 {
    // Writing to serial
 
@@ -366,6 +373,7 @@ void set_current_maximum(caen_hv_state *s, float imax)
 
    s->iset = imax;
 
+   read_board_status(s);
    return ;
 
 }
@@ -393,6 +401,7 @@ void set_ramp_up_value(caen_hv_state *s, float ramp_up)
 
    s->ramp_up = ramp_up;
 
+   read_board_status(s);
    return ;
 }
 
@@ -413,12 +422,13 @@ void set_ramp_down_value(caen_hv_state *s, float ramp_down)
    // Check for errros
    if(strcmp(response,"OK"))
    {
-      printf("Error on SET RAMP UP COMMAND\n");
+      printf("Error on SET RAMP DOWN COMMAND\n");
       exit(-42);
    }
 
    s->ramp_down = ramp_down;
 
+   read_board_status(s);
    return ;
 }
 
@@ -438,12 +448,14 @@ void set_trip(caen_hv_state *s, float trip)
    // Check for errros
    if(strcmp(response,"OK"))
    {
-      printf("Error on SET RAMP UP COMMAND\n");
+      printf("Error on SET TRIP COMMAND\n");
       exit(-42);
    }
 
    s->trip = trip;
 
+
+   read_board_status(s);
    return ;
 }
 
@@ -456,20 +468,29 @@ void set_power_down_mode(caen_hv_state *s, int pdmode)
    char* modes[2] = {"RAMP","KILL"};
 
    sprintf(cmd,"$CMD:SET,PAR:PDWN,VAL:%s\r\n", modes[pdmode]);
+   printf("%s\n", cmd);
+
+   printf(">>p %i\n", s->status[KILL]);
    write(s->serial_port, cmd, sizeof(cmd));
    usleep(2000);
+
 
    unsigned char response[50];
    read_from_serial(s->serial_port, response,0);
 
+   read_board_status(s);
+   printf(">>d %i\n", s->status[KILL]);
+
+   printf("%s\n", response);
    // Check for errros
    if(strcmp(response,"OK"))
    {
-      printf("Error on SET RAMP UP COMMAND\n");
+      printf("Error on SET POWER DOWN MODE COMMAND\n");
       exit(-42);
    }
 
-   s->power_down_mode = (pdmode == MODE_RAMP) ? MODE_RAMP: MODE_KILL;
+   s->power_down_mode = (pdmode == MODE_KILL) ? MODE_KILL: MODE_RAMP;
+
 
    return ;
 }
@@ -492,12 +513,13 @@ void set_imrange(caen_hv_state *s, int imode)
    // Check for errros
    if(strcmp(response,"OK"))
    {
-      printf("Error on SET RAMP UP COMMAND\n");
+      printf("Error on SET IMRANGE COMMAND\n");
       exit(-42);
    }
 
    s->im_range = imode ? 1 : 0 ;
 
+   read_board_status(s);
    return ;
 }
 
@@ -505,8 +527,6 @@ void set_imrange(caen_hv_state *s, int imode)
 
 void set_channel_on(caen_hv_state *s)
 {
-   // Writing to serial
-
    // Writing to serial
    unsigned char cmd[] = "$CMD:SET,PAR:ON\r\n";
    write(s->serial_port, cmd, sizeof(cmd));
@@ -518,10 +538,14 @@ void set_channel_on(caen_hv_state *s)
    // Check for errros
    if(strcmp(response,"OK"))
    {
-      printf("Error on SET MAXIMUM CURRENT COMMAND\n");
+      printf("Error on SET CHANNEL ON COMMAND\n");
       exit(-41);
    }
 
+
+   read_board_status(s);
+
+   printf("[dbg] > Channel 1 : %i\n", s->status[ON]);
    return ;
 
 }
@@ -530,8 +554,6 @@ void set_channel_on(caen_hv_state *s)
 
 void set_channel_off(caen_hv_state *s)
 {
-   // Writing to serial
-
    // Writing to serial
    unsigned char cmd[] = "$CMD:SET,PAR:OFF\r\n";
    write(s->serial_port, cmd, sizeof(cmd));
@@ -543,12 +565,14 @@ void set_channel_off(caen_hv_state *s)
    // Check for errros
    if(strcmp(response,"OK"))
    {
-      printf("Error on SET MAXIMUM CURRENT COMMAND\n");
+      printf("Error on SET CHANNEL ON COMMAND\n");
       exit(-41);
    }
 
-   return ;
 
+   read_board_status(s);
+
+   return ;
 }
 
 
@@ -561,20 +585,20 @@ void board_clear_signal(caen_hv_state* s)
    write(s->serial_port, cmd, sizeof(cmd));
 
    // Waiting for transmission time
-   usleep(2000);
+   // seems to be longer for clearing board signal state
+   usleep(10000);
 
    unsigned char response[50];
    read_from_serial(s->serial_port, response, 0);
 
    // Error Handling
+   // Check for errros
+   if(strcmp(response,"OK"))
+   {
+      printf("Error on SET MAXIMUM CURRENT COMMAND\n");
+      exit(-41);
+   }
 
-   return ;
-}
-
-
-void test(caen_hv_state* s, float val)
-{
-   printf("%.3f\n", val);
-
+   read_board_status(s);
    return ;
 }

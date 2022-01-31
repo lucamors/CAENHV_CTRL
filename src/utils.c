@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "gui.h"
 #include "caen_usb_protocol.h"
 
 void configure_caen_serial_comm(struct termios * ptr_tty, int vtime, int vmin, int serial_port)
@@ -79,6 +80,16 @@ void print_board_information(caen_hv_state* s)
    printf("Trip value      : %4f\n", s->trip );
    printf("Maximum Voltage : %4f V\n", s->max_v);
    printf("Maximum Current : %4f uA\n", s->max_i);
+
+   return ;
+}
+
+void test(caen_hv_state* s, float val)
+{
+   char monitor_string[50];
+   sprintf(monitor_string,"VSET: %.4f", val);
+
+   gtk_label_set_text(GTK_LABEL(label_vset), (const gchar *) monitor_string);
 
    return ;
 }

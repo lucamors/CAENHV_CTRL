@@ -2,7 +2,8 @@
 
 #include "utils.h"
 
-enum status_bits{
+enum status_bits
+{
    ON,
    RUP,
    RDW,

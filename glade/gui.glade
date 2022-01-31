@@ -2,13 +2,18 @@
 <!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkImage" id="image1">
+  <object class="GtkImage" id="alarm">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-dialog-error</property>
   </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
+    <property name="title" translatable="yes">CAEN DT547xx HV Control</property>
+    <property name="resizable">False</property>
+    <property name="default_width">-1</property>
+    <property name="default_height">-1</property>
+    <property name="icon">../docs/icon.png</property>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -30,7 +35,7 @@
             <signal name="clicked" handler="on_btn_connect_clicked" swapped="no"/>
           </object>
           <packing>
-            <property name="x">120</property>
+            <property name="x">10</property>
             <property name="y">20</property>
           </packing>
         </child>
@@ -42,14 +47,14 @@
             <property name="label" translatable="yes">Disconnected</property>
             <property name="max_width_chars">0</property>
             <attributes>
-              <attribute name="font-desc" value="GFS Neohellenic Bold 15"/>
+              <attribute name="font-desc" value="IPAexGothic 12"/>
               <attribute name="foreground" value="#eeeeeeeeecec"/>
-              <attribute name="background" value="#adad7f7fa8a8"/>
+              <attribute name="background" value="#757550507b7b"/>
             </attributes>
           </object>
           <packing>
-            <property name="x">10</property>
-            <property name="y">35</property>
+            <property name="x">250</property>
+            <property name="y">22</property>
           </packing>
         </child>
         <child>
@@ -65,7 +70,7 @@
             <signal name="clicked" handler="on_btn_disconnect_clicked" swapped="no"/>
           </object>
           <packing>
-            <property name="x">230</property>
+            <property name="x">120</property>
             <property name="y">20</property>
           </packing>
         </child>
@@ -75,6 +80,7 @@
             <property name="height_request">35</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="active">0</property>
             <items>
               <item id="vset_id" translatable="yes">VSET</item>
               <item id="iset_id" translatable="yes">ISET</item>
@@ -95,6 +101,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Command</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="x">10</property>
@@ -164,7 +171,7 @@
             <property name="layout_style">end</property>
             <child>
               <object class="GtkCheckButton" id="btn_flag_current_gen">
-                <property name="label" translatable="yes">Current Generator</property>
+                <property name="label" translatable="yes">TRIP</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
@@ -193,7 +200,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="btn_flag_">
+              <object class="GtkCheckButton" id="btn_flag_chdis">
                 <property name="label" translatable="yes">Channel Disabled</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
@@ -395,7 +402,7 @@
         </child>
         <child>
           <object class="GtkSeparator" id="sep3">
-            <property name="height_request">260</property>
+            <property name="height_request">320</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
           </object>
@@ -405,23 +412,24 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton">
-            <property name="label" translatable="yes">SEND ALARM RESET</property>
+          <object class="GtkButton" id="btn_alarm_reset">
+            <property name="label" translatable="yes">Send Alarm Reset</property>
             <property name="width_request">100</property>
-            <property name="height_request">45</property>
+            <property name="height_request">35</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="image">image1</property>
+            <property name="image">alarm</property>
             <property name="always_show_image">True</property>
+            <signal name="clicked" handler="on_btn_alarm_reset_clicked" swapped="no"/>
           </object>
           <packing>
-            <property name="x">500</property>
-            <property name="y">20</property>
+            <property name="x">560</property>
+            <property name="y">5</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="id_voltage_level">
+          <object class="GtkLabel" id="label_voltage_level">
             <property name="width_request">100</property>
             <property name="height_request">35</property>
             <property name="visible">True</property>
@@ -435,7 +443,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="id_current_level">
+          <object class="GtkLabel" id="label_current_level">
             <property name="width_request">100</property>
             <property name="height_request">35</property>
             <property name="visible">True</property>
@@ -449,16 +457,16 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSwitch" id="btn_imrange">
+          <object class="GtkSwitch" id="btn_power_down_mode">
             <property name="width_request">40</property>
             <property name="height_request">10</property>
             <property name="visible">True</property>
-            <property name="sensitive">False</property>
             <property name="can_focus">True</property>
+            <signal name="state-set" handler="on_btn_power_down_mode_state_set" swapped="no"/>
           </object>
           <packing>
             <property name="x">60</property>
-            <property name="y">362</property>
+            <property name="y">400</property>
           </packing>
         </child>
         <child>
@@ -471,7 +479,7 @@
           </object>
           <packing>
             <property name="x">174</property>
-            <property name="y">360</property>
+            <property name="y">400</property>
           </packing>
         </child>
         <child>
@@ -484,7 +492,7 @@
           </object>
           <packing>
             <property name="x">264</property>
-            <property name="y">360</property>
+            <property name="y">400</property>
           </packing>
         </child>
         <child>
@@ -497,7 +505,7 @@
           </object>
           <packing>
             <property name="x">210</property>
-            <property name="y">329</property>
+            <property name="y">365</property>
           </packing>
         </child>
         <child>
@@ -510,20 +518,20 @@
           </object>
           <packing>
             <property name="x">10</property>
-            <property name="y">329</property>
+            <property name="y">365</property>
           </packing>
         </child>
         <child>
-          <object class="GtkSwitch">
+          <object class="GtkSwitch" id="btn_imrange">
             <property name="width_request">40</property>
             <property name="height_request">10</property>
             <property name="visible">True</property>
-            <property name="sensitive">False</property>
             <property name="can_focus">True</property>
+            <signal name="state-set" handler="on_btn_imrange_state_set" swapped="no"/>
           </object>
           <packing>
             <property name="x">223</property>
-            <property name="y">362</property>
+            <property name="y">400</property>
           </packing>
         </child>
         <child>
@@ -536,7 +544,7 @@
           </object>
           <packing>
             <property name="x">110</property>
-            <property name="y">360</property>
+            <property name="y">400</property>
           </packing>
         </child>
         <child>
@@ -549,7 +557,7 @@
           </object>
           <packing>
             <property name="x">10</property>
-            <property name="y">360</property>
+            <property name="y">400</property>
           </packing>
         </child>
         <child>
@@ -619,6 +627,50 @@
           <packing>
             <property name="x">10</property>
             <property name="y">260</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSwitch" id="btn_ch1_enable">
+            <property name="width_request">50</property>
+            <property name="height_request">35</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <signal name="state-set" handler="on_btn_ch1_enable_state_set" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">245</property>
+            <property name="y">44</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_ch1_enable">
+            <property name="width_request">100</property>
+            <property name="height_request">35</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">CH1 Enable</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="x">297</property>
+            <property name="y">44</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_monitor">
+            <property name="label">gtk-refresh</property>
+            <property name="width_request">100</property>
+            <property name="height_request">35</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_stock">True</property>
+            <property name="always_show_image">True</property>
+            <signal name="clicked" handler="on_btn_monitor_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">560</property>
+            <property name="y">45</property>
           </packing>
         </child>
       </object>
