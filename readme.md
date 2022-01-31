@@ -3,7 +3,7 @@
 ### disclaimer
 
 The project is still under development:
-a lot of code need to be properly refactored and almost no
+a lot of code needs to be properly refactored, and almost no
 errors are handled up to now.
 
 # A simple controller for CAEN DT547x H.V. Power Supply
