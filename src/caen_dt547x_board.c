@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "caen_dt547x_board.h"
 #include "gui.h"
 #include "caen_usb_protocol.h"
 

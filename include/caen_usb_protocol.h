@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils.h"
+#include "caen_dt547x_board.h"
 
 enum status_bits
 {

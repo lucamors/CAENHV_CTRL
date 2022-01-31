@@ -1,7 +1,8 @@
 #include "caen_usb_protocol.h"
+#include "caen_dt547x_board.h"
+
 #include <string.h>
 #include <stdlib.h>
-#include "utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // MONITOR COMMANDS
