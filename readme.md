@@ -1,7 +1,5 @@
 <img width="400" src="docs/logo.svg">
 
-### disclaimer
-
 > **Warning** The project is still under development:
 > a lot of code needs to be properly refactored, and almost no
 > errors are properly handled up to now.
